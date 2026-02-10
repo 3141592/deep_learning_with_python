@@ -1,11 +1,11 @@
 #!/bin/bash
-mkdir -p /root/src/data
+mkdir -p ~/src/data
 
 kaggle competitions download -c dogs-vs-cats
-mv dogs-vs-cats.zip /tmp/
+mv dogs-vs-cats.zip ~/tmp/
 
-mkdir /root/src/data/dogs-vs-cats/
-unzip /tmp/dogs-vs-cats.zip -d /root/src/data/dogs-vs-cats/
-unzip /root/src/data/dogs-vs-cats/train.zip -d /root/src/data/dogs-vs-cats/
+mkdir ~/src/data/dogs-vs-cats/
+unzip ~/tmp/dogs-vs-cats.zip -d ~/src/data/dogs-vs-cats/
+unzip ~/src/data/dogs-vs-cats/train.zip -d ~/src/data/dogs-vs-cats/
 
-rm /tmp/dogs-vs-cats.zip
+rm ~/tmp/dogs-vs-cats.zip

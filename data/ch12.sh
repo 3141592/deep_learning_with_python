@@ -5,9 +5,9 @@
 #1. make ~/.bash_aliases and add the following codes to gdrive_download (alias command):
 
 gdrive_download () {
-  CONFIRM=$(wget --wait 10 --random-wait --continue --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate "https://docs.google.com/uc?export=download&id=$1" -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')
-  wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$CONFIRM&id=$1" -O $2
-  rm -rf /tmp/cookies.txt
+  CONFIRM=$(wget --wait 10 --random-wait --continue --quiet --save-cookies ~/tmp/cookies.txt --keep-session-cookies --no-check-certificate "https://docs.google.com/uc?export=download&id=$1" -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')
+  wget --load-cookies ~/tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$CONFIRM&id=$1" -O $2
+  rm -rf ~/tmp/cookies.txt
 }
 
 #2. Add the following codes to ~/.bashrc:
@@ -24,7 +24,7 @@ gdrive_download () {
 
 #source ~/.bashrc #to use alias command
 
-save_dir="/root/src/data/celeba_gan"
+save_dir="~/src/data/celeba_gan"
 if [ ! -e $save_dir ]; then
     mkdir $save_dir
 fi
