@@ -1,10 +1,14 @@
 # Suppress warnings
 import os, pathlib
+from ai_surgery.data_paths import get_data_root
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Force CPU use for keras.
 #os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 #os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
+DATA_ROOT = get_data_root() / "aclImdb"
 
 print("11.4.3 The Transformer encoder")
 import tensorflow as tf
@@ -12,13 +16,16 @@ from tensorflow import keras
 batch_size = 16
 
 train_ds = keras.utils.text_dataset_from_directory(
-                "/root/src/data/aclImdb/train/", batch_size=batch_size)
+                DATA_ROOT / "train/",
+                batch_size=batch_size)
 
 val_ds = keras.utils.text_dataset_from_directory(
-                "/root/src/data/aclImdb/val/", batch_size=batch_size)
+                DATA_ROOT / "train/",
+                batch_size=batch_size)
 
 test_ds = keras.utils.text_dataset_from_directory(
-                "/root/src/data/aclImdb/test/", batch_size=batch_size)
+                DATA_ROOT / "test/",
+                batch_size=batch_size)
 
 text_only_train_ds = train_ds.map(lambda x, y: x)
 

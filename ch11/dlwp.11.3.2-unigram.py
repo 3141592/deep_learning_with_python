@@ -1,6 +1,10 @@
 # Suppress warnings
 import os, pathlib
+from ai_surgery.data_paths import get_data_root
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+DATA_ROOT = get_data_root() / "aclImdb"
 
 print("Listing 11.2 Displaying the shapes and dtypes of the first batch")
 import tensorflow as tf
@@ -9,13 +13,16 @@ from tensorflow.keras.layers import TextVectorization
 batch_size = 32
 
 train_ds = keras.utils.text_dataset_from_directory(
-        "/root/src/data/aclImdb/train/", batch_size=batch_size)
+        DATA_ROOT / "train/",
+        batch_size=batch_size)
 
 val_ds = keras.utils.text_dataset_from_directory(
-        "/root/src/data/aclImdb/val/", batch_size=batch_size)
+        DATA_ROOT / "val/",
+        batch_size=batch_size)
 
 test_ds = keras.utils.text_dataset_from_directory(
-        "/root/src/data/aclImdb/test/", batch_size=batch_size)
+        DATA_ROOT / "test/",
+        batch_size=batch_size)
 
 for inputs, targets in train_ds:
     print("inputs.shape: ", inputs.shape)

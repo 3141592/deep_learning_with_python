@@ -1,10 +1,14 @@
 # Suppress warnings
 import os, pathlib
+from ai_surgery.data_paths import get_data_root
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Force CPU use for keras.
 #os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 #os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
+DATA_ROOT = get_data_root() / "aclImdb"
 
 print("11.3.3 Processing words as a sequence: The sequence model approach")
 import tensorflow as tf
@@ -12,13 +16,16 @@ from tensorflow import keras
 batch_size = 16
 
 train_ds = keras.utils.text_dataset_from_directory(
-                "/root/src/data/aclImdb/train/", batch_size=batch_size)
+                DATA_ROOT / "train/",
+                batch_size=batch_size)
 
 val_ds = keras.utils.text_dataset_from_directory(
-                "/root/src/data/aclImdb/val/", batch_size=batch_size)
+                DATA_ROOT / "val/",
+                batch_size=batch_size)
 
 test_ds = keras.utils.text_dataset_from_directory(
-                "/root/src/data/aclImdb/test/", batch_size=batch_size)
+                DATA_ROOT / "test/",
+                batch_size=batch_size)
 
 text_only_train_ds = train_ds.map(lambda x, y: x)
 
@@ -47,7 +54,7 @@ int_test_ds = test_ds.map(
 
 print("Listing 11.18 Parsing the GloVe word-embeddings file")
 import numpy as np
-path_to_glove_file = "/root/src/data/glove.6B/glove.6B.100d.txt"
+path_to_glove_file = get_data_root() / "glove.6B/glove.6B.100d.txt"
 
 embeddings_index = {}
 with open(path_to_glove_file) as f:

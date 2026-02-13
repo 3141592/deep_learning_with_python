@@ -1,0 +1,8 @@
+{
+  "python.defaultInterpreterPath": "${env:HOME}/venvs/tf/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}"
+  ]
+}
+

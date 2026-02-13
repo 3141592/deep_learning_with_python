@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "TF: Debug current file",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "python": "${userHome}/venvs/tf/bin/python",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/.."
+      }
+    }
+  ]
+}
+

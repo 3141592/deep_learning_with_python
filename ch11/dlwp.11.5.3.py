@@ -1,5 +1,7 @@
 # Suppress warnings
 import os, pathlib
+from ai_surgery.data_paths import get_data_root
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Force CPU use for keras.
@@ -9,7 +11,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 print("11.5 Beyond text classification: Sequence-to-sequence learning")
 print("11.5.1 A machine translation example")
 print("Parse the file")
-text_file = "/root/src/data/spa-eng/spa.txt"
+text_file = get_data_root() / "spa-eng/spa.txt"
 with open(text_file) as f:
     lines = f.read().split("\n")[:-1]
 text_pairs = []
