@@ -3,7 +3,7 @@ import os, pathlib
 from deep_learning_with_python.data_paths import get_data_root
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-DATA_PATH = get_data_root() / "celeba_gan"
+DATA_PATH = get_data_root() / "celeba_gan" / "img_align_celeba"
 
 # Force CPU use for keras.
 #os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"

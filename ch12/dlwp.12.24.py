@@ -1,6 +1,19 @@
 # Suppress warnings
 import os, pathlib
+from pathlib import Path
+from deep_learning_with_python.data_paths import get_data_root
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+def get_data_root() -> Path:
+    return Path(os.environ.get("DATA_ROOT", Path.home() / "src" / "data"))
+
+MODEL_PATH = (
+    get_data_root()
+    / "models"
+    / "encoder.keras"
+)
+
+MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 # Force CPU use for keras.
 #os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -93,16 +106,19 @@ mnist_digits = np.concatenate([x_train, x_test], axis=0)
 mnist_digits = np.expand_dims(mnist_digits, -1).astype("float32") / 255
 
 callbacks = [
-        # We use a callback to save the best-performing model
-        keras.callbacks.ModelCheckpoint("encoder.keras", monitor='total_loss', save_format="tf", save_best_only=True)
+    keras.callbacks.ModelCheckpoint(
+        filepath=MODEL_PATH,
+        monitor="val_loss",
+        save_best_only=True,
+        verbose=1
+    )
 ]
-checkpointer = tf.keras.callbacks.ModelCheckpoint(filepath = "encoder.keraws", monitor='total_loss', save_best_only = True, verbose=1)
 
 vae = VAE(encoder)
 # Note that we don't pass a loss argument in compile(), since the loss is already part of the train_step().
 vae.compile(optimizer=keras.optimizers.Adam(), run_eagerly=True)
 # Note that we don't pass targets in fit(), since train_step doesn't expect any.
-vae.fit(mnist_digits, epochs=30, batch_size=128, callbacks=[checkpointer])
+vae.fit(mnist_digits, epochs=30, batch_size=128, callbacks=[callbacks])
 
 print("Listing 12.29 Sampling a grid of images from the 2D latent space")
 import matplotlib.pyplot as plt
