@@ -1,6 +1,7 @@
 # 9.3.2 Residual connections
 # Suppress warnings
 import os, pathlib
+from deep_learning_with_python.data_paths import get_data_root
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 #

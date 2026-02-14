@@ -1,10 +1,11 @@
 # 8.2.5 Using data augmentation
 # Suppress warnings
 import os, pathlib
+from deep_learning_with_python.data_paths import get_data_root
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # 8.2.2
-new_base_dir = pathlib.Path("/root/src/data/cats_vs_dogs_small")
+new_base_dir = get_data_root() / "cats_vs_dogs_small"
 
 #
 # Listing 8.9 Using image_dataset_from_directory to read images
@@ -81,7 +82,7 @@ callbacks = [
         keras.callbacks.ModelCheckpoint(
             filepath="convnet_from_scratch_with_augmentation.keras",
             save_best_only=True,
-            metrics="val_loss")
+            monitor="val_loss")
 ]
 history = model.fit(
         train_dataset,

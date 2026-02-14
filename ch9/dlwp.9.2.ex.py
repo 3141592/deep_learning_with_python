@@ -1,12 +1,14 @@
 # 9.2 An image segmentation example
 # Suppress warnings
 import os, pathlib
+from deep_learning_with_python.data_paths import get_data_root
 #os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import os
 
 input_dir = "/root/src/data/images/"
-target_dir = "/root/src/data/annotations/trimaps/"
+input_dir = get_data_root() / "images"
+target_dir = get_data_root() / "annotations/trimaps/"
 
 input_img_paths = sorted(
         [os.path.join(input_dir, fname)

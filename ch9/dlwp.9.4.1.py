@@ -3,8 +3,22 @@
 import os, pathlib
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+from pathlib import Path
+import os
+
+def get_data_root() -> Path:
+    return Path(os.environ.get("DATA_ROOT", Path.home() / "src" / "data"))
+
+MODEL_PATH = (
+    get_data_root()
+    / "models"
+    / "convnet_from_scratch_with_augmentation.keras"
+)
+
+MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+
 from tensorflow import keras
-model = keras.models.load_model("/root/src/dlwp/convnet_from_scratch_with_augmentation.keras")
+model = keras.models.load_model(MODEL_PATH)
 model.summary()
 
 #

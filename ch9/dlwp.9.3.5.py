@@ -1,10 +1,11 @@
 # 9.3.5 Putting it together: A mini Xception-like model
 # Suppress warnings
 import os, pathlib
+from deep_learning_with_python.data_paths import get_data_root
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # 8.2.2
-new_base_dir = pathlib.Path("/root/src/data/cats_vs_dogs_small")
+new_base_dir = get_data_root() / "cats_vs_dogs_small"
 
 #
 # Listing 8.9 Using image_dataset_from_directory to read images
@@ -102,8 +103,8 @@ model.compile(loss="binary_crossentropy",
 callbacks = [
         keras.callbacks.ModelCheckpoint(
             filepath="convnet_with_xception_architecture.keras",
-            save_best_only=True,
-            metrics="val_loss")
+            monitor="val_loss",
+            save_best_only=True)
 ]
 history = model.fit(
         train_dataset,

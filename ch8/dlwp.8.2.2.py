@@ -3,11 +3,15 @@
 #
 # Listing 8.6 Copying images to training, validation, and test directories
 import os, shutil, pathlib
+from deep_learning_with_python.data_paths import get_data_root
+
+DATA_ROOT = get_data_root()
 
 # Path to original directory where original dataset was uncompressed
-original_dir = pathlib.Path("/root/src/data/dogs-vs-cats/train")
+original_dir = DATA_ROOT / "dogs-vs-cats/train"
+
 # Directory where we will store our smaller dataset
-new_base_dir = pathlib.Path("/root/src/data/cats_vs_dogs_small")
+new_base_dir = DATA_ROOT / "cats_vs_dogs_small"
 
 # Utility function to copy cat (and dog) images from index start_index to index end_index 
 # to the subdirectory new_base_dir/{subset_name}/cat (and /dog).

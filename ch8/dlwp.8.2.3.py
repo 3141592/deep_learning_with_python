@@ -1,6 +1,7 @@
 # 8.2.3 Building the model
 # Suppress warnings
 import os, pathlib
+from deep_learning_with_python.data_paths import get_data_root
 #os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 #
@@ -8,8 +9,10 @@ import os, pathlib
 from tensorflow import keras
 from tensorflow.keras import layers
 
-# 8.2.2
-new_base_dir = pathlib.Path("/root/src/data/cats_vs_dogs_small")
+DATA_ROOT = get_data_root() / "cats_vs_dogs_small"
+
+ # 8.2.2
+new_base_dir = DATA_ROOT
 
 # The model expects RGB images of size 180 x 180
 inputs = keras.Input(shape=(180, 180, 3))

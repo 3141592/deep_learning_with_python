@@ -1,12 +1,22 @@
 # 9.2 An image segmentation example
 # Suppress warnings
 import os, pathlib
+from pathlib import Path
+from deep_learning_with_python.data_paths import get_data_root
 #os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-import os
+def get_data_root() -> Path:
+    return Path(os.environ.get("DATA_ROOT", Path.home() / "src" / "data"))
 
-input_dir = "/root/src/data/images/"
-target_dir = "/root/src/data/annotations/trimaps/"
+MODEL_PATH = (
+    get_data_root()
+    / "models"
+)
+
+MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+input_dir = get_data_root() / "images"
+target_dir = get_data_root() / "annotations/trimaps"
 
 input_img_paths = sorted(
         [os.path.join(input_dir, fname)
@@ -166,7 +176,7 @@ print("Compile and fit model")
 model.compile(optimizer="rmsprop", loss="sparse_categorical_crossentropy")
 
 callbacks = [
-        keras.callbacks.ModelCheckpoint("oxford.segmentation.keras",
+        keras.callbacks.ModelCheckpoint(MODEL_PATH / "oxford.segmentation.keras",
             save_best_only=True)
 ]
 
