@@ -1,2 +1,3 @@
 **/*.keras
 **/combination_image_at_iteration*
+**/generated_image*

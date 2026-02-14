@@ -39,7 +39,7 @@ Configuration hints:
 
 """
 import os, pathlib
-from ai_surgery.data_paths import get_data_root
+from deep_learning_with_python.data_paths import get_data_root
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Force CPU use for keras.

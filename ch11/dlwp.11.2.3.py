@@ -1,5 +1,5 @@
 import numpy as np
-from ai_surgery.data_paths import get_data_root
+from deep_learning_with_python.data_paths import get_data_root
 
 DATA_ROOT = get_data_root()
 

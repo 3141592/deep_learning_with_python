@@ -1,6 +1,9 @@
 # Suppress warnings
 import os, pathlib
+from deep_learning_with_python.data_paths import get_data_root
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+DATA_ROOT = get_data_root()
 
 # Force CPU use for keras.
 #os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -12,13 +15,9 @@ print("Listing 12.9 Fetching the test image")
 from tensorflow import keras
 import matplotlib.pyplot as plt
 
-#base_image_path = keras.utils.get_file(
-#        "coast.jpg",
-#        origin="https://img-datasets.s3.amazonaws.com/coast.jpg")
-
 base_image_path = keras.utils.get_file(
-        "image1.jpg",
-        origin="")
+        "coast.jpg",
+        origin="https://img-datasets.s3.amazonaws.com/coast.jpg")
 
 plt.axis("off")
 plt.imshow(keras.utils.load_img(base_image_path))

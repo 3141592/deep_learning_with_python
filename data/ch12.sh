@@ -24,7 +24,7 @@ gdrive_download () {
 
 #source ~/.bashrc #to use alias command
 
-save_dir="~/src/data/celeba_gan"
+save_dir="$HOME/src/data/celeba_gan"
 if [ ! -e $save_dir ]; then
     mkdir $save_dir
 fi
@@ -47,10 +47,5 @@ do
     fi
 done
 
-for i in `seq -w 1 014`
-do
-    if [ ! -e $save_dir/img_celeba.7z.$i ]; then
-        num=$(( 10#$i -1 )) #drive_ids array starts from 0
-        unzip $save_dir/img_celeba.7z.$i
-    fi
-done
+# Extract the split 7z archive (only .001; it will read .002, .003, etc)
+7z x "$save_dir/img_celeba.7z.001" -o"$save_dir"
