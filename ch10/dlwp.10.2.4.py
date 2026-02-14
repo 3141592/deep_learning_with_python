@@ -1,14 +1,17 @@
+import os, pathlib
+from deep_learning_with_python.data_paths import get_data_root
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+DATA_ROOT = get_data_root()
+
 # 10.2.4 Let's try a 1D convolutional model
 print("10.2.4 Let's try a 1D convolutional model")
-# Suppress warnings
-import os, pathlib
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 #
 # Listing 10.1 Inspecting the data of the Jena weather dataset
 print("Listing 10.1 Inspecting the data of the Jena weather dataset")
 import os
-fname = os.path.join("/root/src/data/jena_climate_2009_2016.csv")
+fname = os.path.join(DATA_ROOT, "jena_climate_2009_2016.csv")
 
 with open(fname) as f:
     data = f.read()

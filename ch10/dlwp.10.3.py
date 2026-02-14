@@ -1,8 +1,11 @@
+import os, pathlib
+from deep_learning_with_python.data_paths import get_data_root
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+DATA_ROOT = get_data_root()
+
 # 10.3 Understanding recurrent neural networks
 print("10.3 Understanding recurrent neural networks")
-# Suppress warnings
-import os, pathlib
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 #
 # Listing 10.15 NumPy implementation of a simple RNN
