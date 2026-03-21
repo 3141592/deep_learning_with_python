@@ -1,5 +1,6 @@
 # Suppress warnings
 import os, pathlib
+import numpy as np
 from ai_shared_data import get_asset_path
 
 os.environ["TF_XLA_FLAGS"] = "--tf_xla_auto_jit=0"
@@ -214,7 +215,8 @@ dense_dim = 32
 inputs = keras.Input(shape=(None,), dtype="int64")
 x = PositionalEmbedding(sequence_length, vocab_size, embed_dim)(inputs)
 x = TransformerEncoder(embed_dim, dense_dim, num_heads)(x)
-x = layers.GlobalMaxPooling1D()(x)
+#x = layers.GlobalMaxPooling1D()(x)
+x = layers.GlobalAveragePooling1D()(x)
 x = layers.Dropout(0.5)(x)
 outputs = layers.Dense(1, activation="sigmoid")(x)
 model = keras.Model(inputs, outputs)
@@ -236,59 +238,49 @@ model.fit(int_train_ds,
         epochs=20,
         callbacks=callbacks)
 
-import numpy as np
-import tensorflow as tf
-
-def show_mistakes(model, ds, n=20, binary=True, threshold=0.5):
+def show_mistakes_pair(debug_model, raw_ds, int_ds, n=20, threshold=0.5):
     """
-    Prints up to n misclassified examples from a tf.data.Dataset.
-    Assumes ds yields (x, y) where x is either raw text (string) or token ids.
-    If x is raw text, printing is nice. If x is token ids, you’ll see integers.
+    raw_ds yields (text, y)
+    int_ds yields (token_ids, y)
+    debug_model accepts raw text (string) and outputs probs
     """
     shown = 0
 
-    for batch_x, batch_y in ds:
-        # Predict on this batch
-        preds = model(batch_x, training=False)
+    raw_iter = iter(raw_ds)
+    int_iter = iter(int_ds)
 
-        # Normalize shapes to 1D arrays
-        y_true = tf.reshape(batch_y, [-1]).numpy()
+    while shown < n:
+        raw_x, raw_y = next(raw_iter)
+        int_x, int_y = next(int_iter)
 
-        if binary:
-            # preds might be shape (B, 1) with sigmoid
-            p = tf.reshape(preds, [-1]).numpy()
-            y_pred = (p >= threshold).astype(np.int32)
-        else:
-            # preds shape (B, num_classes) with softmax (or logits)
-            p = preds.numpy()
-            y_pred = np.argmax(p, axis=-1).astype(np.int32)
+        # sanity: labels should match
+        y_true = tf.reshape(raw_y, [-1]).numpy()
+        y_true2 = tf.reshape(int_y, [-1]).numpy()
+        if not np.array_equal(y_true, y_true2):
+            raise ValueError("raw_ds and int_ds are not aligned (labels differ).")
 
-        wrong_idx = np.where(y_pred != y_true)[0]
-        if wrong_idx.size == 0:
+        p = tf.reshape(debug_model(raw_x, training=False), [-1]).numpy()
+        y_pred = (p >= threshold).astype(np.int32)
+
+        wrong = np.where(y_pred != y_true)[0]
+        if wrong.size == 0:
             continue
 
-        # Convert batch_x to something printable
-        # If it's raw text, batch_x dtype is string -> decode bytes if needed.
-        bx = batch_x.numpy() if hasattr(batch_x, "numpy") else batch_x
+        rx = raw_x.numpy()
+        ix = int_x.numpy()
 
-        for i in wrong_idx:
+        for i in wrong:
             if shown >= n:
                 return
 
-            x_i = bx[i]
-            if isinstance(x_i, (bytes, np.bytes_)):
-                x_i = x_i.decode("utf-8", errors="replace")
+            txt = rx[i]
+            if isinstance(txt, (bytes, np.bytes_)):
+                txt = txt.decode("utf-8", errors="replace")
 
-            if binary:
-                print("----")
-                print(f"true={int(y_true[i])} pred={int(y_pred[i])} p={float(p[i]):.4f}")
-                print(x_i)
-            else:
-                # Show top probabilities (first few)
-                top = np.argsort(-p[i])[:5]
-                print("----")
-                print(f"true={int(y_true[i])} pred={int(y_pred[i])} top5={[(int(k), float(p[i][k])) for k in top]}")
-                print(x_i)
+            print("----")
+            print(f"true={int(y_true[i])} pred={int(y_pred[i])} p={float(p[i]):.4f}")
+            print(txt[:800])
+            print("TOKENS(head 80):", ix[i][:80])
 
             shown += 1
 
@@ -298,7 +290,7 @@ token_ids = text_vectorization(string_inputs)
 outputs = model(token_ids)
 debug_model = keras.Model(string_inputs, outputs, name="debug_model")
 
-show_mistakes(debug_model, test_ds, n=25, binary=True)   # or binary=False for multi-class
+show_mistakes_pair(debug_model, test_ds, int_test_ds, n=25, threshold=0.5)
 
 model = keras.models.load_model(
         MODEL_PATH,

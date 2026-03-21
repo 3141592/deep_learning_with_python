@@ -1,6 +1,6 @@
 # Suppress warnings
 import os, pathlib
-from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_data import get_asset_path
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -8,7 +8,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 #os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 #os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-DATA_ROOT = get_data_root() / "aclImdb"
+DATA_ROOT = get_asset_path("aclImdb")
+MODEL_PATH = (
+    get_asset_path("transformer_encoder")
+)
 
 print("11.4.3 The Transformer encoder")
 import tensorflow as tf
@@ -122,7 +125,7 @@ model.summary()
 
 print("Listing 11.23 Training and evaluating the Transformer encoder based model")
 callbacks = [
-        keras.callbacks.ModelCheckpoint("transformer_encoder.keras",
+        keras.callbacks.ModelCheckpoint(MODEL_PATH,
         save_best_only=True)
 ]
 model.fit(int_train_ds,
@@ -130,7 +133,7 @@ model.fit(int_train_ds,
         epochs=20,
         callbacks=callbacks)
 model = keras.models.load_model(
-        "transformer_encoder.keras",
+        MODEL_PATH,
         # Provide the custom TransformerEncoder class to the model-loading process
         custom_objects={"TransformerEncoder": TransformerEncoder})
 print(f"Test acc: {model.evaluate(int_test_ds)[1]:.3f}")

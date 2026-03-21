@@ -1,10 +1,9 @@
 # Suppress warnings
 import os, pathlib
-from deep_learning_with_python.data_paths import get_data_root
+import shutil
+from ai_shared_data import ensure_asset, get_asset_path
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
-DATA_ROOT = get_data_root()
 
 # 11.3.1 Preparing the IMDB movie reviews data
 print("11.3.1 Preparing the IMDB movie reviews data")
@@ -12,9 +11,14 @@ print("11.3.1 Preparing the IMDB movie reviews data")
 print("Prepare a validation set by setting apart 20% of the training text files in a new directory")
 import os, pathlib, shutil, random
 
-base_dir = DATA_ROOT  / "aclImdb"
+ensure_asset("aclImdb")
+base_dir = get_asset_path("aclImdb")
 val_dir = base_dir / "val"
 train_dir = base_dir / "train"
+
+if val_dir.exists():
+    shutil.rmtree(val_dir)
+
 for category in ("neg", "pos"):
     os.makedirs(val_dir / category, exist_ok = True)
     files = os.listdir(train_dir / category)
@@ -26,7 +30,7 @@ for category in ("neg", "pos"):
     val_files = files[-num_val_samples:]
     # Move the files to aclImdb/val/neg and aclImdb/val/pos
     for fname in val_files:
-        shutil.move(train_dir / category / fname,
+        shutil.copy(train_dir / category / fname,
                     val_dir / category / fname)
 
 

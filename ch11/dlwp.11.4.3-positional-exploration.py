@@ -17,14 +17,14 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 DATA_ROOT = get_asset_path("aclImdb")
 MODEL_PATH = (
-    get_asset_path("full_transformer_encoder")
+    get_asset_path("full_transformer_encoder_exploration")
 )
 
 print("11.4.3 The Transformer encoder")
 import tensorflow as tf
 from tensorflow import keras
 
-batch_size = 16
+batch_size = 32
 seed = 1337
 val_split = 0.2  # 20% of train -> val
 
@@ -65,30 +65,6 @@ text_vectorization = layers.TextVectorization(
 )
 text_vectorization.adapt(text_only_train_ds)
 
-def peek_labels(ds, n=8):
-    shown = 0
-    for batch_x, batch_y in ds:
-        bx = batch_x.numpy()
-        by = batch_y.numpy()
-
-        for i in range(len(by)):
-            if shown >= n:
-                return
-
-            x_i = bx[i]
-            y_i = by[i]
-
-            if isinstance(x_i, (bytes, bytearray)):
-                x_i = x_i.decode("utf-8", errors="replace")
-
-            print("----")
-            print("label:", int(y_i))
-            print(x_i[:400])
-
-            shown += 1    
-
-peek_labels(test_ds, n=8)
-
 int_train_ds = train_ds.map(
                 lambda x, y: (text_vectorization(x), y),
                 num_parallel_calls=tf.data.AUTOTUNE)
@@ -99,8 +75,6 @@ int_test_ds = test_ds.map(
                 lambda x, y: (text_vectorization(x), y),
                 num_parallel_calls=tf.data.AUTOTUNE)
 
-peek_labels(int_test_ds, n=8)
-exit
 print("Listing 11.21 Transformer encoder implemented as a subclassed Layer")
 import tensorflow as tf
 from tensorflow import keras
@@ -178,8 +152,15 @@ class PositionalEmbedding(layers.Layer):
         length = tf.shape(inputs)[-1]
         positions = tf.range(start=0, limit=length, delta=1)
         embedded_tokens = self.token_embeddings(inputs)
+        if tf.executing_eagerly():
+            tf.print("embedded_tokens shape:", tf.shape(embedded_tokens ))
         embedded_positions = self.position_embeddings(positions)
-        return embedded_tokens + embedded_positions
+        if tf.executing_eagerly():
+            tf.print("embedded_positions shape:", tf.shape(embedded_positions))
+        updated_tokens = embedded_tokens + embedded_positions
+        if tf.executing_eagerly():
+            tf.print("updated_tokens shape:", tf.shape(updated_tokens))
+        return updated_tokens
 
     # Like the Embedding layer, this layer should be able to generate a mask so 
     # we can ignore padding zeros in the inputs. The compute_mask method will be 
@@ -236,69 +217,8 @@ model.fit(int_train_ds,
         epochs=20,
         callbacks=callbacks)
 
-import numpy as np
-import tensorflow as tf
-
-def show_mistakes(model, ds, n=20, binary=True, threshold=0.5):
-    """
-    Prints up to n misclassified examples from a tf.data.Dataset.
-    Assumes ds yields (x, y) where x is either raw text (string) or token ids.
-    If x is raw text, printing is nice. If x is token ids, you’ll see integers.
-    """
-    shown = 0
-
-    for batch_x, batch_y in ds:
-        # Predict on this batch
-        preds = model(batch_x, training=False)
-
-        # Normalize shapes to 1D arrays
-        y_true = tf.reshape(batch_y, [-1]).numpy()
-
-        if binary:
-            # preds might be shape (B, 1) with sigmoid
-            p = tf.reshape(preds, [-1]).numpy()
-            y_pred = (p >= threshold).astype(np.int32)
-        else:
-            # preds shape (B, num_classes) with softmax (or logits)
-            p = preds.numpy()
-            y_pred = np.argmax(p, axis=-1).astype(np.int32)
-
-        wrong_idx = np.where(y_pred != y_true)[0]
-        if wrong_idx.size == 0:
-            continue
-
-        # Convert batch_x to something printable
-        # If it's raw text, batch_x dtype is string -> decode bytes if needed.
-        bx = batch_x.numpy() if hasattr(batch_x, "numpy") else batch_x
-
-        for i in wrong_idx:
-            if shown >= n:
-                return
-
-            x_i = bx[i]
-            if isinstance(x_i, (bytes, np.bytes_)):
-                x_i = x_i.decode("utf-8", errors="replace")
-
-            if binary:
-                print("----")
-                print(f"true={int(y_true[i])} pred={int(y_pred[i])} p={float(p[i]):.4f}")
-                print(x_i)
-            else:
-                # Show top probabilities (first few)
-                top = np.argsort(-p[i])[:5]
-                print("----")
-                print(f"true={int(y_true[i])} pred={int(y_pred[i])} top5={[(int(k), float(p[i][k])) for k in top]}")
-                print(x_i)
-
-            shown += 1
-
-# Wrap: string -> TextVectorization -> trained model
-string_inputs = keras.Input(shape=(), dtype=tf.string, name="raw_text")
-token_ids = text_vectorization(string_inputs)
-outputs = model(token_ids)
-debug_model = keras.Model(string_inputs, outputs, name="debug_model")
-
-show_mistakes(debug_model, test_ds, n=25, binary=True)   # or binary=False for multi-class
+batch = next(iter(int_train_ds))
+model(batch[0])
 
 model = keras.models.load_model(
         MODEL_PATH,

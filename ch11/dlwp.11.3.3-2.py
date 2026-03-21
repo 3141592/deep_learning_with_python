@@ -1,6 +1,6 @@
 # Suppress warnings
 import os, pathlib
-from ai_shared_data import get_asset_path
+from ai_shared_data import ensure_asset, get_asset_path
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -9,11 +9,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 #os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 DATA_ROOT = get_asset_path("aclImdb")
-
-# one_hot_bidir_lstm.keras is the model trained in dlwp.11.3.3.py
-MODEL_PATH = (
-    get_asset_path("one_hot_bidir_lstm")
-)   
+MODEL_PATH = get_asset_path("glove_embeddings_sequence_model")
 
 print("11.3.3 Processing words as a sequence: The sequence model approach")
 import tensorflow as tf
@@ -70,20 +66,51 @@ int_test_ds = test_ds.map(
                 lambda x, y: (text_vectorization(x), y),
                 num_parallel_calls=tf.data.AUTOTUNE)
 
-print("11.13 A sequence model built on one-hot encoded vector seqeunces")
-# One input is a sequence of integers.
-inputs = keras.Input(shape=(None,), dtype="int64")
-# Encode the integers into 20000-dimensional vectors
-# embedded = tf.one_hot(inputs, depth=max_tokens)
-# Wrap one_hot so it becomes a Keras layer in the Functional graph
-embedded = keras.layers.CategoryEncoding(
-    num_tokens=max_tokens, output_mode="one_hot"
-)(inputs)
+print("Listing 11.18 Parsing the GloVe word-embeddings file")
+import numpy as np
+path_to_glove_file = get_asset_path("glove.6B.100d")
 
-# Add a bidirectional LSTM
+embeddings_index = {}
+with open(path_to_glove_file) as f:
+    for line in f:
+        word, coefs = line.split(maxsplit=1)
+        coefs = np.fromstring(coefs, "f", sep=" ")
+        embeddings_index[word] = coefs
+
+print(f"Found {len(embeddings_index)} word vectors.")
+
+print("Listing 11.19 Preparing the GloVe word-embeddings matrix")
+embedding_dim = 100
+
+# Retrieve the vocabulary indexed by our previous TextVectorization layer.
+vocabulary = text_vectorization.get_vocabulary()
+
+# Use it to create a mapping from words to their index in the vocabulary.
+word_index = dict(zip(vocabulary, range(len(vocabulary))))
+
+# Prepare a matrix that we'll fill with the GloVe vectors.
+embedding_matrix = np.zeros((max_tokens, embedding_dim))
+for word, i in word_index.items():
+    if i < max_tokens:
+        embedding_vector = embeddings_index.get(word)
+    # Fill entry i in the matrix with the word vector for index i.
+    # Words not foundin the embedding index will be all zeros.
+    if embedding_vector is not None:
+        embedding_matrix[i] = embedding_vector
+
+embedding_layer = layers.Embedding(
+        max_tokens,
+        embedding_dim,
+        embeddings_initializer=keras.initializers.Constant(embedding_matrix),
+        trainable=False,
+        mask_zero=True
+)
+
+print("Listing 11.20 Model that uses a pretrained Embedding layer")
+inputs = keras.Input(shape=(None,), dtype="int64")
+embedded = embedding_layer(inputs)
 x = layers.Bidirectional(layers.LSTM(32))(embedded)
 x = layers.Dropout(0.5)(x)
-# Finally, add a classification layer
 outputs = layers.Dense(1, activation="sigmoid")(x)
 model = keras.Model(inputs, outputs)
 model.compile(optimizer="rmsprop",
@@ -91,7 +118,6 @@ model.compile(optimizer="rmsprop",
         metrics=["accuracy"])
 model.summary()
 
-print("Listing 11.14 Training a first basic sequence model")
 callbacks = [
         keras.callbacks.ModelCheckpoint(MODEL_PATH,
             save_best_only=True)
@@ -100,6 +126,5 @@ model.fit(int_train_ds,
         validation_data=int_val_ds,
         epochs=10,
         callbacks=callbacks)
-model = keras.models.load_model(MODEL_PATH)
+model=keras.models.load_model(MODEL_PATH)
 print(f"Test acc: {model.evaluate(int_test_ds)[1]:.3f}")
-

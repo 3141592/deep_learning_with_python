@@ -1,7 +1,7 @@
 # 8.1 Introduction to convnets
 # Suppress warnings
 import os
-from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_data import ensure_asset, get_asset_path
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 #

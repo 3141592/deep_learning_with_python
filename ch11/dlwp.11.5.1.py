@@ -1,6 +1,6 @@
 # Suppress warnings
 import os, pathlib
-from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_data import get_asset_path
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -11,7 +11,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 print("11.5 Beyond text classification: Sequence-to-sequence learning")
 print("11.5.1 A machine translation example")
 print("Parse the file")
-text_file = get_data_root() / "spa-eng/spa.txt"
+text_file = get_asset_path("spa-eng")
 
 with open(text_file) as f:
     lines = f.read().split("\n")[:-1]

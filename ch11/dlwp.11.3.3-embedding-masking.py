@@ -1,6 +1,6 @@
 # Suppress warnings
 import os, pathlib
-from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_data import get_asset_path
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -8,24 +8,41 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 #os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 #os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-DATA_ROOT = get_data_root() / "aclImdb"
+DATA_ROOT = get_asset_path("aclImdb")
+
+MODEL_PATH = (
+    get_asset_path("one_hot_bidir_gru_with_masking")
+)
 
 print("11.3.3 Processing words as a sequence: The sequence model approach")
 import tensorflow as tf
 from tensorflow import keras
+
 batch_size = 16
+seed = 1337
+val_split = 0.2  # 20% of train -> val
 
 train_ds = keras.utils.text_dataset_from_directory(
-                DATA_ROOT / "train",
-                batch_size=batch_size)
+    DATA_ROOT / "train",
+    batch_size=batch_size,
+    validation_split=val_split,
+    subset="training",
+    seed=seed,
+)
 
 val_ds = keras.utils.text_dataset_from_directory(
-                DATA_ROOT / "val",
-                batch_size=batch_size)
+    DATA_ROOT / "train",
+    batch_size=batch_size,
+    validation_split=val_split,
+    subset="validation",
+    seed=seed,
+)
 
 test_ds = keras.utils.text_dataset_from_directory(
-                DATA_ROOT / "test",
-                batch_size=batch_size)
+    DATA_ROOT / "test",
+    batch_size=batch_size,
+    shuffle=False,
+)
 
 text_only_train_ds = train_ds.map(lambda x, y: x)
 
@@ -65,13 +82,13 @@ model.compile(optimizer="rmsprop",
 model.summary()
 
 callbacks = [
-        keras.callbacks.ModelCheckpoint("one_hot_bidir_gru_with_masking.keras",
+        keras.callbacks.ModelCheckpoint(MODEL_PATH,
             save_best_only=True)
 ]
 model.fit(int_train_ds,
         validation_data=int_val_ds,
         epochs=10,
         callbacks=callbacks)
-model = keras.models.load_model("one_hot_bidir_gru_with_masking.keras")
+model = keras.models.load_model(MODEL_PATH)
 print(f"Test acc: {model.evaluate(int_test_ds)[1]:.3f}")
 

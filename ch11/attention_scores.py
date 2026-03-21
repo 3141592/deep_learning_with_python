@@ -13,19 +13,32 @@ DATA_ROOT = get_data_root()
 print("11.3.3 Processing words as a sequence: The sequence model approach")
 import tensorflow as tf
 from tensorflow import keras
+
 batch_size = 16
+seed = 1337
+val_split = 0.2  # 20% of train -> val
 
 train_ds = keras.utils.text_dataset_from_directory(
-                DATA_ROOT / "aclImdb" / "train", 
-                batch_size=batch_size)
+    DATA_ROOT / "aclImdb" / "train",
+    batch_size=batch_size,
+    validation_split=val_split,
+    subset="training",
+    seed=seed,
+)
 
 val_ds = keras.utils.text_dataset_from_directory(
-                DATA_ROOT / "aclImdb" / "val", 
-                batch_size=batch_size)
+    DATA_ROOT / "aclImdb" / "train",
+    batch_size=batch_size,
+    validation_split=val_split,
+    subset="validation",
+    seed=seed,
+)
 
 test_ds = keras.utils.text_dataset_from_directory(
-                DATA_ROOT / "aclImdb" / "test", 
-                batch_size=batch_size)
+    DATA_ROOT / "aclImdb" / "test",
+    batch_size=batch_size,
+    shuffle=False,
+)
 
 text_only_train_ds = train_ds.map(lambda x, y: x)
 

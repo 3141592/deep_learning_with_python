@@ -1,36 +1,49 @@
 # Suppress warnings
 import os, pathlib
-from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_data import ensure_asset, get_asset_path
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Force CPU use for keras.
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = ""
+#os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+#os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-DATA_ROOT = get_data_root() / "aclImdb"
+basedir = get_asset_path("aclImdb")
+MODEL_PATH = get_asset_path("tfidf_2gram")
 
 print("Listing 11.2 Displaying the shapes and dtypes of the first batch")
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.layers import TextVectorization
+
 batch_size = 32
+seed = 1337
+val_split = 0.2  # 20% of train -> val
 
 train_ds = keras.utils.text_dataset_from_directory(
-        DATA_ROOT / "train/",
-        batch_size=batch_size)
+    basedir / "train",
+    batch_size=batch_size,
+    validation_split=val_split,
+    subset="training",
+    seed=seed,
+)
 
 val_ds = keras.utils.text_dataset_from_directory(
-        DATA_ROOT / "val/",
-        batch_size=batch_size)
+    basedir / "train",
+    batch_size=batch_size,
+    validation_split=val_split,
+    subset="validation",
+    seed=seed,
+)
 
 test_ds = keras.utils.text_dataset_from_directory(
-        DATA_ROOT / "test/",
-        batch_size=batch_size)
+    basedir / "test",
+    batch_size=batch_size,
+    shuffle=False,
+)
 
 print("11.3.2 Processing words as a set: The bag-of-words approach")
 print("Listing 11.10 Configuring TextVectorization to return TF-IDF-weighted outputs")
-print("As of TF 2.8.0 this only works on CPU, not GPU")
 text_vectorization = TextVectorization(
         ngrams=2,
         max_tokens=20000,
@@ -39,7 +52,7 @@ text_vectorization = TextVectorization(
 print("Prepare a dataset that only yields raw text inputs (no labels).")
 text_only_train_ds = train_ds.map(lambda x, y: x)
 
-# The adpat() call will learn the TF-IDF weights in addition to the vocabulary. 
+# The adapt() call will learn the TF-IDF weights in addition to the vocabulary. 
 text_vectorization.adapt(text_only_train_ds)
 
 print("Listing 11.11 Training and testing the TF-IDF bigram model")
@@ -71,7 +84,7 @@ def get_model(max_tokens=20000, hidden_dim =16):
 model = get_model()
 model.summary()
 callbacks = [
-        keras.callbacks.ModelCheckpoint("tfidf_2gram.keras",
+        keras.callbacks.ModelCheckpoint(MODEL_PATH,
                                         save_best_only=True)
 ]
 # We call cache() on the datasets to cache them in memory: this way we will only do the preprocessing once,
@@ -81,7 +94,7 @@ model.fit(tfidf_2gram_train_ds.cache(),
         validation_data=tfidf_2gram_val_ds.cache(),
         epochs=10,
         callbacks=callbacks)
-model = keras.models.load_model("tfidf_2gram.keras")
+model = keras.models.load_model(MODEL_PATH)
 print(f"Test acc: {model.evaluate(tfidf_2gram_test_ds)[1]:.3f}")
 
 print("Exporting a model the processes raw strings")
