@@ -6,6 +6,9 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.datasets import mnist
 import keras.backend as K
+from ai_shared_data import ensure_asset, get_asset_path, get_data_home
+
+MODEL_PATH = get_data_home() / "models" / "checkpoint_path.keras"
 
 # Create a model (we factor this into a separate function so as to reuse it later).
 def get_mnist_model():
@@ -23,8 +26,6 @@ test_images = test_images.reshape((10000, 28 * 28)).astype("float32") / 255
 train_images, val_images = images[10000:], images[:10000]
 train_labels, val_labels = labels[10000:], labels[:10000]
 
-
-
 #
 # Listing 7.19 Using the callbacks argument in the fit() method
 
@@ -41,7 +42,7 @@ callbacks_list = [
     # Saves the current weights after every epoch
     keras.callbacks.ModelCheckpoint(
         # Path to the destination model file
-        filepath="checkpoint_path.keras",
+        filepath=MODEL_PATH,
         # These two arguments mean you won't overwrite the model file unless val_loss
         # has improved, which allows you to keep the best model seen during training.
         monitor="val_loss",

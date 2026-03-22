@@ -1,11 +1,14 @@
 # 8.3.1 Feature extraction with a pretrained model
 # Suppress warnings
 import os, pathlib
-from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_data import ensure_asset, get_asset_path, get_data_home
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # 8.2.2
-new_base_dir = pathlib.Path(get_data_root()) / "cats_vs_dogs_small"
+new_base_dir = get_data_home() / "datasets" / "cats_vs_dogs_small"
+# feature_extraction_with_data_augmentation
+MODEL_PATH1 = get_data_home() / "models" / "feature_extraction_with_data_augmentation.keras"
+MODEL_PATH2 = get_data_home() / "models" / "fine_tuning.keras"
 
 #
 # Listing 8.9 Using image_dataset_from_directory to read images
@@ -65,7 +68,7 @@ model.summary()
 
 callbacks = [
         keras.callbacks.ModelCheckpoint(
-            filepath="feature_extraction_with_data_augmentation.keras",
+            filepath=MODEL_PATH1,
             save_best_only=True,
             monitor="val_loss")
 ]
@@ -90,7 +93,7 @@ plt.title("Training and validation accuracy")
 plt.legend()
 plt.figure()
 plt.plot(epochs, loss, "bo", label="Training loss")
-plt.plot(epochs, val_loss, "b", label="Validation less")
+plt.plot(epochs, val_loss, "b", label="Validation loss")
 plt.title("Training and validation loss")
 plt.legend()
 plt.show()
@@ -98,7 +101,7 @@ plt.show()
 # 
 # Listing 8.26 Evaluating the model on the test set
 print("Listing 8.26 Evaluating the model on the test set")
-test_model = keras.models.load_model("feature_extraction_with_data_augmentation.keras")
+test_model = keras.models.load_model(MODEL_PATH1)
 test_loss, test_acc = test_model.evaluate(test_dataset)
 print(f"Test accuracy: {test_acc:.3f}")
 print(f"Test loss: {test_loss:.3f}")
@@ -121,7 +124,7 @@ model.compile(loss="binary_crossentropy",
 
 callbacks = [
         keras.callbacks.ModelCheckpoint(
-            filepath="fine_tuning.keras",
+            filepath=MODEL_PATH2,
             save_best_only=True,
             monitor="val_loss")
 ]
@@ -131,7 +134,7 @@ history = model.fit(
         validation_data=validation_dataset,
         callbacks=callbacks)
 
-model = keras.models.load_model("fine_tuning.keras")
+model = keras.models.load_model(MODEL_PATH2)
 
 test_loss, test_acc = test_model.evaluate(test_dataset)
 print(f"Test accuracy: {test_acc:.3f}")

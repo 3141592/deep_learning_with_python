@@ -1,11 +1,13 @@
 # 8.3.1 Feature extraction with a pretrained model
 # Suppress warnings
 import os, pathlib
-from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_data import ensure_asset, get_asset_path, get_data_home
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # 8.2.2
-new_base_dir = get_data_root() / "cats_vs_dogs_small"
+new_base_dir = get_data_home() / "datasets" / "cats_vs_dogs_small"
+MODEL_PATH = get_data_home() / "models" / "feature_extraction.keras"
 
 #
 # Listing 8.9 Using image_dataset_from_directory to read images
@@ -76,7 +78,7 @@ model.compile(loss="binary_crossentropy",
 
 callbacks = [
         keras.callbacks.ModelCheckpoint(
-            filepath="feature_extraction.keras",
+            filepath=MODEL_PATH,
             save_best_only=True,
             monitor="val_loss")
 ]

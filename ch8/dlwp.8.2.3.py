@@ -10,6 +10,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 DATA_ROOT = get_data_home() / "datasets" / "cats_vs_dogs_small"
+MODEL_PATH = get_data_home() / "models" / "convnet_from_scratch.keras"
 
  # 8.2.2
 new_base_dir = DATA_ROOT
@@ -67,7 +68,7 @@ for data_batch, labels_batch in train_dataset:
 # Listing 8.11 Fitting the model using a Dataset
 callbacks = [
         keras.callbacks.ModelCheckpoint(
-            filepath="convnet_from_scratch.keras",
+            filepath=MODEL_PATH,
             save_best_only=True,
             monitor="val_loss")
 ]
