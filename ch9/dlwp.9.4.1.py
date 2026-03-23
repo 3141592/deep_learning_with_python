@@ -1,21 +1,11 @@
 # 9.4.1 Visualizing intermediate activations
 # Suppress warnings
 import os, pathlib
+from pathlib import Path
+from ai_shared_utilities import ensure_asset, get_asset_path, get_data_home
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-from pathlib import Path
-import os
-
-def get_data_root() -> Path:
-    return Path(os.environ.get("DATA_ROOT", Path.home() / "src" / "data"))
-
-MODEL_PATH = (
-    get_data_root()
-    / "models"
-    / "convnet_from_scratch_with_augmentation.keras"
-)
-
-MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+MODEL_PATH = get_data_home() / "models" / "convnet_from_scratch_with_augmentation.keras"
 
 from tensorflow import keras
 model = keras.models.load_model(MODEL_PATH)

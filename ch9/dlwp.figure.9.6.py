@@ -3,20 +3,12 @@
 import os, pathlib
 from pathlib import Path
 from tensorflow.keras.utils import load_img, img_to_array 
-from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_utilities import ensure_asset, get_asset_path, get_data_home
 
-def get_data_root() -> Path:
-    return Path(os.environ.get("DATA_ROOT", Path.home() / "src" / "data"))
+MODEL_PATH = get_data_home() / "models" / "oxford_segmentation_keras.keras"
 
-MODEL_PATH = (
-    get_data_root()
-    / "models"
-)
-
-MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
-
-input_dir = get_data_root() / "images"
-target_dir = get_data_root() / "annotations" / "trimaps"
+input_dir = get_data_home() / "datasets" / "images"
+target_dir = get_data_home() / "datasets" / "annotations" / "trimaps"
 
 input_img_paths = sorted(
         [os.path.join(input_dir, fname)
@@ -75,7 +67,7 @@ from tensorflow import keras
 from tensorflow.keras.utils import array_to_img
 import matplotlib.pyplot as plt
 
-model = keras.models.load_model(MODEL_PATH / "oxford.segmentation.keras")
+model = keras.models.load_model(MODEL_PATH)
 
 i = 5
 test_image = val_input_imgs[i]

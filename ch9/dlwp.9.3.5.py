@@ -1,11 +1,13 @@
 # 9.3.5 Putting it together: A mini Xception-like model
 # Suppress warnings
 import os, pathlib
-from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_utilities import ensure_asset, get_asset_path, get_data_home
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # 8.2.2
-new_base_dir = get_data_root() / "cats_vs_dogs_small"
+new_base_dir = get_data_home() / "datasets" / "cats_vs_dogs_small"
+# convnet_with_xception_architecture
+MODEL_PATH = get_data_home() / "models" / "convnet_with_xception_architecture.keras"
 
 #
 # Listing 8.9 Using image_dataset_from_directory to read images
@@ -102,7 +104,7 @@ model.compile(loss="binary_crossentropy",
 # Listing 8.17 Training the regularized convnet
 callbacks = [
         keras.callbacks.ModelCheckpoint(
-            filepath="convnet_with_xception_architecture.keras",
+            filepath=MODEL_PATH,
             monitor="val_loss",
             save_best_only=True)
 ]
@@ -131,7 +133,7 @@ plt.show()
 #
 # Listing 8.18 Evaluating the model on the test set
 print("Listing 8.18 Evaluating the model on the test set.")
-test_model = keras.models.load_model("convnet_with_xception_architecture.keras")
+test_model = keras.models.load_model(MODEL_PATH)
 test_loss, test_acc = test_model.evaluate(test_dataset)
 print(f"Test accuracy: {test_acc:.3f}")
 
