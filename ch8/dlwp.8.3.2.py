@@ -1,7 +1,7 @@
 # 8.3.1 Feature extraction with a pretrained model
 # Suppress warnings
 import os, pathlib
-from ai_shared_data import ensure_asset, get_asset_path, get_data_home
+from ai_shared_utilities import ensure_asset, get_asset_path, get_data_home
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # 8.2.2

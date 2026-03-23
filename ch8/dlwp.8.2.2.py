@@ -3,7 +3,7 @@
 #
 # Listing 8.6 Copying images to training, validation, and test directories
 import os, shutil, pathlib
-from ai_shared_data import ensure_asset, get_asset_path, get_data_home
+from ai_shared_utilities import ensure_asset, get_asset_path, get_data_home
 
 # Path to original directory where original dataset was uncompressed
 ensure_asset("dogs_vs_cats")

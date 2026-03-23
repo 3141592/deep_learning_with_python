@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 import tensorflow as tf
 from tensorflow import keras
-from ai_shared_data import get_asset_path
+from ai_shared_utilities import get_asset_path
 
 DATA_ROOT = get_asset_path("aclImdb")
 

@@ -1,7 +1,7 @@
 # 8.1 Introduction to convnets
 # Suppress warnings
 import os
-from ai_shared_data import ensure_asset, get_asset_path
+from ai_shared_utilities import ensure_asset, get_asset_path
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 #

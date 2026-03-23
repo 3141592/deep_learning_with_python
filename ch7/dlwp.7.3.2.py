@@ -6,7 +6,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.datasets import mnist
 import keras.backend as K
-from ai_shared_data import ensure_asset, get_asset_path, get_data_home
+from ai_shared_utilities import ensure_asset, get_asset_path, get_data_home
 
 MODEL_PATH = get_data_home() / "models" / "checkpoint_path.keras"
 

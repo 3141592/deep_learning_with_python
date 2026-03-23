@@ -1,7 +1,7 @@
 # Suppress warnings / TF noise (even though we aren't using TF here)
 import os
 import numpy as np
-from ai_shared_data import get_asset_path
+from ai_shared_utilities import get_asset_path
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 

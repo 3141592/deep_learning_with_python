@@ -7,7 +7,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.callbacks import EarlyStopping
-from ai_shared_data import get_asset_path
+from ai_shared_utilities import get_asset_path
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 

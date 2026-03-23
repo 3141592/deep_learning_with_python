@@ -4,6 +4,8 @@
 # Mar 19, 2019
 # https://medium.com/@mrgarg.rajat/training-on-large-datasets-that-dont-fit-in-memory-in-keras-60a974785d71
 #
+import keras
+import numpy as np
 
 class My_Custom_Generator(keras.utils.Sequence) :
   

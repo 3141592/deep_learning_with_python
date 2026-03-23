@@ -2,21 +2,13 @@
 # Suppress warnings
 import os, pathlib
 from pathlib import Path
-from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_utilities import ensure_asset, get_asset_path, get_data_home
 #os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-def get_data_root() -> Path:
-    return Path(os.environ.get("DATA_ROOT", Path.home() / "src" / "data"))
+MODEL_PATH = get_data_home() / "models" / "oxford.segmentation.keras"
 
-MODEL_PATH = (
-    get_data_root()
-    / "models"
-)
-
-MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
-
-input_dir = get_data_root() / "images"
-target_dir = get_data_root() / "annotations/trimaps"
+input_dir = get_data_home() / "datasets" / "images"
+target_dir = get_data_home() / "datasets" / "annotations" / "trimaps"
 
 input_img_paths = sorted(
         [os.path.join(input_dir, fname)

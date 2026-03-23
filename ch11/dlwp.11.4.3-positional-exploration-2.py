@@ -1,7 +1,7 @@
 # Suppress warnings
 import os, pathlib
 import numpy as np
-from ai_shared_data import get_asset_path
+from ai_shared_utilities import get_asset_path
 
 os.environ["TF_XLA_FLAGS"] = "--tf_xla_auto_jit=0"
 import tensorflow as tf
