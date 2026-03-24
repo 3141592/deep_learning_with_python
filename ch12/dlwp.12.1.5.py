@@ -1,9 +1,9 @@
 # Suppress warnings
 import os, pathlib
-from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_utilities import ensure_asset, get_asset, get_asset_path, get_data_home
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-DATA_PATH = get_data_root()
+ASSET = get_asset("aclImdb")
 
 # Force CPU use for keras.
 #os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -132,7 +132,7 @@ print("Listing 12.3 Creating a database from text files (one file = one sample)"
 import tensorflow as tf
 from tensorflow import keras
 dataset = keras.utils.text_dataset_from_directory(
-        directory=DATA_PATH / "aclImdb",
+        directory=ASSET.path,
         label_mode=None,
         batch_size=256)
 
