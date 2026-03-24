@@ -1,8 +1,8 @@
 import os, pathlib
-from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_utilities import ensure_asset, get_asset, get_asset_path, get_data_home
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-DATA_ROOT = get_data_root()
+#DATA_ROOT = get_data_root()
 
 # 10.3 Understanding recurrent neural networks
 print("10.3 Understanding recurrent neural networks")

@@ -1,8 +1,10 @@
 import os, pathlib
-from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_utilities import ensure_asset, get_asset, get_asset_path, get_data_home
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-DATA_ROOT = get_data_root()
+ensure_asset("jena_climate")
+ASSET = get_asset("jena_climate")
+MODEL_PATH = get_data_home() / "models" / "jena_lstm.keras"
 
 # 10.4 Advanced use of recurrent neural networks
 print("10.4 Advanced use of recurrent neural networks")
@@ -10,7 +12,7 @@ print("10.4 Advanced use of recurrent neural networks")
 #
 # Listing 10.1 Inspecting the data of the Jena weather dataset
 print("Listing 10.1 Inspecting the data of the Jena weather dataset")
-fname = os.path.join(DATA_ROOT / "jena_climate_2009_2016.csv")
+fname = os.path.join(ASSET.path)
 
 with open(fname) as f:
     data = f.read()
@@ -126,8 +128,7 @@ model.summary()
 
 callbacks = [
         # We use a callback to save the best-performing model
-        keras.callbacks.ModelCheckpoint("jena_simplernn_cpu.keras",
-            save_best_only=True)
+        keras.callbacks.ModelCheckpoint(MODEL_PATH, save_best_only=True),
 ]
 model.compile(optimizer="rmsprop", loss="mse", metrics=["mae"])
 history = model.fit(train_dataset,

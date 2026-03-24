@@ -1,8 +1,10 @@
 import os, pathlib
-from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_utilities import ensure_asset, get_asset, get_asset_path, get_data_home
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-DATA_ROOT = get_data_root() 
+ensure_asset("jena_climate")
+ASSET = get_asset("jena_climate") 
+MODEL_PATH = get_data_home() / "models" / "jena_dense.keras"
 
 # 10.2.3 Let's try a basic machine learning model
 print("10.2.3 Let's try a basic machine learning model")
@@ -11,7 +13,7 @@ print("10.2.3 Let's try a basic machine learning model")
 # Listing 10.1 Inspecting the data of the Jena weather dataset
 print("Listing 10.1 Inspecting the data of the Jena weather dataset")
 import os
-fname = os.path.join(DATA_ROOT, "jena_climate_2009_2016.csv")
+fname = os.path.join(ASSET.path)
 
 with open(fname) as f:
     data = f.read()
@@ -119,8 +121,7 @@ model.summary()
 
 callbacks = [
         # We use a callback to save the best-performing model
-        keras.callbacks.ModelCheckpoint("jena_dense.keras",
-            save_best_only=True)
+        keras.callbacks.ModelCheckpoint(MODEL_PATH, save_best_only=True)
 ]
 model.compile(optimizer="rmsprop", loss="mse", metrics=["mae"])
 history = model.fit(train_dataset,
@@ -130,7 +131,7 @@ history = model.fit(train_dataset,
 
 # Reload the best model and evaluate it on test data.
 print("Reload the best model and evaluate it on test data.")
-model = keras.models.load_model("jena_dense.keras")
+model = keras.models.load_model(MODEL_PATH)
 print(f"Test MAE: {model.evaluate(test_dataset)[1]:.2f}")
 
 #

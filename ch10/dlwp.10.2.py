@@ -1,15 +1,18 @@
 # 10.2 A temperature forecasting example
 import os, pathlib
 from deep_learning_with_python.data_paths import get_data_root
+from ai_shared_utilities import ensure_asset, get_asset, get_asset_path, get_data_home
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-DATA_ROOT = get_data_root()
+ensure_asset("jena_climate")
+ASSET = get_asset("jena_climate")
+MODEL_PATH = get_data_home() / "models" / "jena_lstm.keras"
 
 #
 # Listing 10.1 Inspecting the data of the Jena weather dataset
 print("Listing 10.1 Inspecting the data of the Jena weather dataset")
 import os
-fname = os.path.join(DATA_ROOT / "jena_climate_2009_2016.csv")
+fname = os.path.join(ASSET.path)
 
 with open(fname) as f:
     data = f.read()
