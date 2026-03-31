@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
+export PYTHONPATH="${REPO_ROOT}${PYTHONPATH:+:${PYTHONPATH}}"
+export TF_CPP_MIN_LOG_LEVEL=2
+
+TARGET="${1:-}"
+if [[ -z "$TARGET" ]]; then
+  echo "Usage: $0 path/to/script.py [args...]"
+  exit 1
+fi
+
+if [[ "$TARGET" == *"/torch/"* || "$TARGET" == torch/* ]]; then
+  exec "$REPO_ROOT/run-torch" "$@"
+fi
+
+exec /home/roy/venvs/tf/bin/python "$@"
